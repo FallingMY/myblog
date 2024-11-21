@@ -173,10 +173,10 @@ creativeCommons:
 
 # See https://giscus.app
 giscus:
-  repo: "FallingMY/FallingMY.github.io" # required.
-  repoId: "R_kgDOMR9LTw" # required.
+  repo: "FallingMY/myblog" # required.
+  repoId: "R_kgDONSsJEA" # required.
   category: "Announcements" # required.
-  categoryId: "DIC_kwDOMSZCT84Cgl_T" # required.
+  categoryId: "DIC_kwDONSsJEM4CkeXl" # required.
   # theme: "dark" # Default to auto.
   # mapping: "title" # Default to pathname.
   # inputPosition: "bottom" # Default to top.
@@ -260,7 +260,7 @@ contact:
     # siteKey: ""
 
 repo:
-  url: https://github.com/FallingMY/FallingMY.github.io
+  url: https://github.com/FallingMY/myblog
   branch: main
   # subPath: exampleSite
   # dateFormat: 02/01/2006, 15:04:05 PM
