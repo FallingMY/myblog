@@ -1,0 +1,121 @@
+<div class="emoji-button-container">
+    <button 
+      class="emoji-button" 
+      onclick="showMessage(event, '{{ .Get "message" | default "谢谢你的喜欢～" }}')"
+      data-clicked="false">
+      {{ .Get "emoji" | default "👍" }}
+    </button>
+    <div id="message-display" class="message-display hidden"></div>
+  </div>
+  
+  <style>
+    /* 按钮样式 */
+    .emoji-button-container {
+      display: inline-block;
+      position: relative;
+    }
+    .emoji-button {
+      font-size: 1.5rem;
+      padding: 4px 10px;
+      border: none;
+      border-radius: 10px;
+      background-color: #d3d3d3; /* 初始灰色 */
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+      transform-origin: center center; /* 设置缩放的中心 */
+    }
+    .emoji-button:active {
+      background-color: #ffec8081; /* 按下时亮黄色 */
+    }
+    .emoji-button:disabled {
+      background-color: #6e4930; /* 禁用后暗黄色 */
+      cursor: not-allowed;
+    }
+  
+    /* 中心文字样式 */
+    .message-display {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 10px 20px;
+      border-radius: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-size: 1.2rem;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+      transition: opacity 1s ease-in-out, transform 2s linear; /* 渐显、渐隐、缓慢移动 */
+      z-index: 9999;
+    }
+    .message-display.visible {
+      opacity: 1;
+      transform: translate(-50%, -100%);
+    }
+    .hidden {
+      display: none;
+    }
+  
+    /* 按钮点击时的弹跳动画 */
+    .bounce {
+      animation: bounce-animation 0.6s ease-in-out;
+    }
+  
+    @keyframes bounce-animation {
+      0% {
+        transform: scale(1) translateY(0);
+      }
+      30% {
+        transform: scale(1.1) translateY(-10px); /* 放大并向上移动 */
+      }
+      50% {
+        transform: scale(0.9) translateY(5px); /* 缩小并向下移动 */
+      }
+      70% {
+        transform: scale(1.05) translateY(-3px); /* 稍微放大并微调位置 */
+      }
+      100% {
+        transform: scale(1) translateY(0); /* 恢复原始大小 */
+      }
+    }
+  </style>
+  
+  <script>
+    function showMessage(event, message) {
+      const button = event.currentTarget;
+  
+      // 检查是否已经被点击
+      if (button.dataset.clicked === "true") return;
+  
+      // 设置按钮为禁用状态
+      button.dataset.clicked = "true";
+      button.disabled = true;
+  
+      // 给按钮添加弹跳动画
+      button.classList.add("bounce");
+  
+      // 设置按钮颜色
+      setTimeout(() => {
+        button.style.backgroundColor = "#ffeb80"; // 亮黄色
+      }, 0);
+      setTimeout(() => {
+        button.style.backgroundColor = "#ffd966"; // 暗黄色
+      }, 100);
+  
+      // 显示文字动画
+      const messageDisplay = document.getElementById("message-display");
+      messageDisplay.innerText = message;
+      messageDisplay.classList.remove("hidden");
+      messageDisplay.classList.add("visible");
+  
+      // 渐隐退出
+      setTimeout(() => {
+        messageDisplay.classList.remove("visible");
+        setTimeout(() => {
+          messageDisplay.classList.add("hidden");
+        }, 1000); // 确保渐隐完成后隐藏
+      }, 2000); // 文字保持显示的时间
+    }
+  </script>

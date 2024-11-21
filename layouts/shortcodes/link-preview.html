@@ -1,0 +1,37 @@
+<div class="link-preview">
+    <a href="{{ .Get "url" }}" target="_blank">
+      <div class="preview-content">
+        <img src="{{ .Get "image" }}" alt="Preview Image" />
+        <h3>{{ .Get "title" }}</h3>
+        <p>{{ .Get "description" }}</p>
+      </div>
+    </a>
+  </div>
+  
+  <style>
+    .link-preview {
+      display: block;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+    }
+    .link-preview img {
+      width: 100%;
+      height: auto;
+    }
+    .link-preview .preview-content {
+      padding: 10px;
+      background-color: #f9f9f9;
+    }
+    .link-preview h3 {
+      margin: 0 0 5px;
+      font-size: 1.2rem;
+    }
+    .link-preview p {
+      margin: 0;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  </style>

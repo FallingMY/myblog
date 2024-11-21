@@ -1,0 +1,11 @@
+<div class="vote-container">
+    <button onclick="incrementVote('{{ .Get "id" }}')">👍 Vote</button>
+    <p id="vote-{{ .Get "id" }}">Votes: 0</p>
+  </div>
+  <script>
+    function incrementVote(id) {
+      const voteElement = document.getElementById('vote-' + id);
+      let currentVotes = parseInt(voteElement.innerText.replace('Votes: ', ''));
+      voteElement.innerText = 'Votes: ' + (currentVotes + 1);
+    }
+  </script>

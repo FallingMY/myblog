@@ -1,0 +1,124 @@
+<div class="hover-preview">
+    <a href="{{ .Get "url" }}" 
+       target="_blank" 
+       onmouseover="showPreview(event, '{{ .Get "url" }}')" 
+       onmousemove="updatePreviewPosition(event)" 
+       onmouseout="hidePreview()">
+      {{ .Get "text" | default "Hover to preview" }}
+    </a>
+    <div id="iframe-preview" class="iframe-preview hidden">
+      <div class="iframe-container">
+        <iframe src=""></iframe>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    .hover-preview {
+      display: inline-block;
+      position: relative;
+    }
+  
+    /* 悬浮窗样式 */
+    .iframe-preview {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 500px; /* 父容器宽度 */
+      height: 300px; /* 父容器高度 */
+      overflow: hidden; /* 裁剪溢出部分 */
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background-color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      pointer-events: none; /* 避免干扰鼠标事件 */
+      transform: scale(0.8); /* 初始缩放值 */
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+      z-index: 9999; /* 确保悬浮窗在最上层 */
+    }
+  
+    .iframe-preview.visible {
+      opacity: 1;
+      transform: scale(1); /* 放大到正常尺寸 */
+    }
+  
+    /* 包裹 iframe 的容器，绝对定位并设置缩放 */
+    .iframe-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%; /* 父元素宽度 */
+      height: 100%; /* 父元素高度 */
+      transform-origin: top left; /* 缩放基准点 */
+      transform: scale(0.8); /* 页面缩放比例 */
+    }
+  
+    /* iframe 设置 */
+    .iframe-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1250px; /* 假定 iframe 内网页的原始宽度 */
+      height: 1000px; /* 假定 iframe 内网页的原始高度 */
+    }
+  
+    .hidden {
+      display: none;
+    }
+  </style>
+  
+  <script>
+    let iframePreview;
+  
+    // 显示悬浮预览窗口
+    function showPreview(event, url) {
+      iframePreview = document.getElementById('iframe-preview');
+      if (!iframePreview) return;
+  
+      const iframe = iframePreview.querySelector("iframe");
+      if (iframe.src !== url) {
+        iframe.src = url; // 设置 iframe 内容
+      }
+  
+      // 显示悬浮窗
+      iframePreview.classList.remove("hidden");
+      iframePreview.classList.add("visible");
+    }
+  
+    // 动态调整悬浮窗位置
+    function updatePreviewPosition(event) {
+      const preview = document.getElementById('iframe-preview');
+      if (!preview) return;
+  
+      const previewWidth = preview.offsetWidth;
+      const previewHeight = preview.offsetHeight;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+  
+      let x = event.clientX + 20; // 鼠标右侧偏移
+      let y = event.clientY + 20; // 鼠标下方偏移
+  
+      if (x + previewWidth > viewportWidth) {
+        x = event.clientX - previewWidth - 20;
+      }
+      if (y + previewHeight > viewportHeight) {
+        y = event.clientY - previewHeight - 20;
+      }
+  
+      preview.style.left = `${x}px`;
+      preview.style.top = `${y}px`;
+    }
+  
+    // 隐藏悬浮窗并清空内容
+    function hidePreview() {
+      const preview = document.getElementById('iframe-preview');
+      if (!preview) return;
+  
+      preview.classList.remove("visible");
+      setTimeout(() => {
+        preview.classList.add("hidden");
+        preview.querySelector("iframe").src = ""; // 清空 iframe 内容
+      }, 300);
+    }
+  </script>

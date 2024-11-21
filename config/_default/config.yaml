@@ -1,0 +1,45 @@
+baseURL: https://fallingmy.github.io/
+title: Falling_Studio_Terminal3
+theme: hugo-theme-bootstrap
+copyright: 'Copyright © 2016-{year} Razon Yang. All Rights Reserved.'
+defaultContentLanguage: en
+# hasCJKLanguage: true # Uncomment it if your content contains Chinese/Japanese/Korean Languages.
+# defaultContentLanguageInSubdir: true
+disableLanguages:
+  - fr
+  - zh-hans
+  - zh-tw
+paginate: 10
+# paginatePath: page
+enableRobotsTXT: true
+enableEmoji: true
+pygmentsUseClasses: true
+
+blackfriday:
+  hrefTargetBlank: true
+
+taxonomies:
+  category: categories
+  series: series
+  tag: tags
+  authors: authors
+
+build:
+  writeStats: true
+
+permalinks:
+  news: /news/:year/:month/:title/
+  blog: /blog/:year/:month/:title/
+
+# module:
+  # proxy: https://goproxy.cn
+
+# services:
+#   disqus:
+#     shortname: your-disqus-shortname
+
+ignoreLogs:
+  - warning-goldmark-raw-html
+
+params:
+  author: "Falling_MY"

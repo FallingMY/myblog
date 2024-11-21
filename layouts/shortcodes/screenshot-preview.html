@@ -1,0 +1,18 @@
+<div class="screenshot-preview">
+    <a href="{{ .Get "url" }}" target="_blank">
+      <img src="{{ .Get "screenshot" }}" alt="Website Screenshot" />
+    </a>
+  </div>
+  
+  <style>
+    .screenshot-preview {
+      display: inline-block;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .screenshot-preview img {
+      width: 100%;
+      height: auto;
+    }
+  </style>
