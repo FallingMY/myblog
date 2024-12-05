@@ -17,7 +17,7 @@ images: []
 
 > C语言能处理一类非常特殊的数据——内存地址（常量）  
 
-如果觉得这篇文章有用不妨点个赞吧  
+如果这篇文章有帮到你的话，不妨点个赞吧  
 {{< emoji-button >}}
 
 ## 引入
@@ -210,3 +210,160 @@ p=&a[0];//等价
 
 其余的感觉和数组差不多…………  
 注意一下`\0`就好了
+
+### 字符数组和字符指针处理字符串的比较
+
+- 储存上的区别
+  - 字符数组由若干元素组成，每个元素储存一个字符
+  - 字符指针变量中储存的是字符串的首地址
+- 传递上的区别
+  - 字符数组名作为函数参数时，传递的是整个数组
+  - 字符指针变量作为函数参数时，传递的是字符串的首地址
+
+```C
+//使用数组形式
+char str[] = "Hello World!";//不定义数组长度
+char str[13] = "Hello World!";//定义数组长度
+//使用指针形式
+char *p = "Hello World!";
+```
+
+## 指针数组
+
+数组元素是指针的数组
+
+### 定义形式
+类型标识 *数组名[数组长度]
+```C
+char *p[10];
+```
+由于[]的优先级高于*，所以先和p结合，形成一个数组形式  再由char*说明这是一个指针数组，它有10个指针类型的数组元素。这里执行`p+1`时，p要跨过10个`char*`的长度。
+
+注意区分：
+`char *p[10]`表示这是一个指针数组，它有10个指针类型的数组元素，其首元素的地址为`p[0]`，类型为`char *`即是一个字符指针。  
+`char (*p)[10]`表示这是一个数组指针，它指向一个一维数组，这个一维数组的长度为10，类型为`char *`，即一个字符指针。  
+
+指针数组用的最多的是“字符串型指针数组”，利用字符指针数组可以指向多个长度不同的字符串，使字符串的处理更加方便灵活，节省空间。  
+
+使用指针数组排序时不需要移动字符串，只需要移动指针  
+
+```C
+//对已排好序的字符指针数组进行指定字符串的查找
+//二分查找
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+
+/*
+测试数据：
+Amanda
+Bob
+Chris
+Follow
+Jill
+William
+
+Follow
+*/
+
+int bianrysearch(char *p[],char *x,int n){
+    //p为字符串指针数组，x为要查找的字符串，n为数组长度
+    int mid,low=0,high=n-1;
+    while(low<=high)
+    {
+        mid = (low+high)/2;
+        if(strcmp(p[mid],x)==0)
+            return mid;
+        else if(strcmp(p[mid],x)>0)
+            high = mid-1;
+        else
+            low = mid+1;
+    }
+    return -1;
+}
+int main(){
+    //char *name[]={"Amanda","Bob","Chris","Follow","Jill","William"};
+    char *name[6];
+    for(int i=0;i<6;i++)
+        name[i] = (char *)malloc(10*sizeof(char));
+    printf("请输入6个字符串：\n");
+    for(int i=0;i<6;i++)
+        gets(name[i]);
+    int i,index;
+    char findname[10];
+    printf("请输入要查找的内容：\n");
+    gets(findname);
+    index = bianrysearch(name,findname,6);
+    if(index==-1)
+        printf("没有找到\n");
+    else
+        printf("在第%d个位置\n",index+1);
+    for(int i=0;i<6;i++)
+        free(name[i]);//释放内存空间
+    return 0;
+}
+
+
+```
+
+## 指针的地址分配
+
+当定义指针变量时，系统会自动分配一个地址给指针变量  
+
+在stdlib.h中提供了两个函数malloc()和free()用来分配和释放内存  
+函数原型为：
+```C
+void *malloc(unsigned int size);
+void free(void *p);
+```
+
+`malloc()`用以向操作系统申请size个字节的内存空间，并返回该内存空间的首地址。需要注意的是，size的值应和要指向的变量类型的字节数一致。  
+`free()`用来释放malloc()函数所申请的内存空间。  
+
+例：
+```C
+//两个字符串的交换
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+int main()
+{
+    char *p1,*p2;
+    p1 = (char *)malloc(100);
+    p2 = (char *)malloc(100);
+    gets(p1);
+    gets(p2);
+    printf("交换前：\n");
+    printf("p1=%s\np2=%s\n",p1,p2);
+    char *temp;
+    temp = (char *)malloc(100);
+    strcpy(temp,p1);
+    strcpy(p1,p2);
+    strcpy(p2,temp);
+    printf("交换后：\n");
+    printf("p1=%s\np2=%s\n",p1,p2);
+    free(p1);
+    free(p2);
+    free(temp);
+    return 0;
+}
+
+```
+
+## 指向指针的指针变量
+
+> 概念：
+> 如果一个指针变量存放的又是另一个指针变量的地址，则称这个指针变量为指向指针的指针变量。  
+> 这个指针也被称为二级指针变量。
+
+例如：
+```C
+int a = 100;
+int *p = &a;//p存放a的地址
+int **pp = &p;//pp存放p的地址
+printf("%d\n",**pp);//输出100
+printf("%d\n",*pp);//输出p的地址
+```
+
+## 指向函数的指针变量
+
