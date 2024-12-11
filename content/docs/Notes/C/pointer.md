@@ -9,7 +9,7 @@ toc: true
 reward: true
 pinned: false
 carousel: false
-series:
+series: '课堂笔记'
 categories: []
 tags: []
 images: []
