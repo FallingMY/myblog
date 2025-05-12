@@ -175,5 +175,3 @@ void DestroyQueue(LinkQueue &Q){
         Q.front = Q.rear;//队头指针指向队尾指针
     }
 }
-```
-
