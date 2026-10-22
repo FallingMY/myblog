@@ -2,6 +2,7 @@
 title: "Can We Protect the Environment Without Giving Up Economic Growth?"
 date: 2026-10-22T23:00:00+08:00
 weight: 3
+navWeight: 2
 featured: false
 draft: false
 comment: true

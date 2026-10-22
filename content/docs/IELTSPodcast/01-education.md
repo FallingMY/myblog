@@ -2,6 +2,7 @@
 title: "What Is Education Really For?"
 date: 2026-10-22T23:00:00+08:00
 weight: 1
+navWeight: 4
 featured: false
 draft: false
 comment: true

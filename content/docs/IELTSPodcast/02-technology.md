@@ -2,6 +2,7 @@
 title: "Is Technology Making Our Lives Better?"
 date: 2026-10-22T23:00:00+08:00
 weight: 2
+navWeight: 3
 featured: false
 draft: false
 comment: true
