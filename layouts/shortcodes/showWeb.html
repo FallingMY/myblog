@@ -1,0 +1,216 @@
+{{/* 获取参数中的文件名 */}}
+{{ $fileName := .Get 0 }}
+
+{{/* 定义读取路径：相对于项目根目录 */}}
+{{ $filePath := printf "layouts/shortcodes/animate_content/%s" $fileName }}
+
+{{/* 生成唯一ID */}}
+{{ $uid := substr (md5 (printf "showWeb-%s-%d" $fileName .Ordinal)) 0 8 }}
+
+<!-- CSS 样式 -->
+<style>
+  /* 遮罩层 */
+  .sw-backdrop-{{ $uid }} {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 9998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .sw-backdrop-{{ $uid }}.active {
+    display: block;
+    opacity: 1;
+  }
+
+  /* 占位容器：用于在全屏时撑开高度，防止页面抖动 */
+  .sw-wrapper-{{ $uid }} {
+    position: relative;
+    width: 100%;
+    /* 默认为 auto，JS 会在切换时动态赋值 */
+    height: auto; 
+  }
+
+  /* 主容器：默认状态 */
+  .sw-container-{{ $uid }} {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    border: 1px solid #eee;
+    /* 移除 transition: all，避免位置切换时的怪异移动 */
+    transition: box-shadow 0.3s, border-radius 0.3s; 
+    z-index: 1;
+    transform-origin: center center;
+  }
+
+  /* 内容区域 */
+  .sw-content-{{ $uid }} {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  /* 按钮样式 */
+  .sw-btn-{{ $uid }} {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    z-index: 10;
+  }
+  .sw-btn-{{ $uid }}:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  /* --- 全屏相关样式 --- */
+
+  /* 全屏激活状态 */
+  .sw-container-{{ $uid }}.fullscreen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 90vw !important;
+    height: 90vh !important;
+    /* 强制居中 */
+    transform: translate(-50%, -50%); 
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border-color: transparent;
+    
+    /* 进场动画：从中心放大出现 */
+    animation: sw-zoomIn-{{ $uid }} 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* 定义动画关键帧 */
+  @keyframes sw-zoomIn-{{ $uid }} {
+    0% {
+      opacity: 0;
+      width: 80vw;
+      height: 80vh;
+      transform: translate(-50%, -50%) scale(0.8);
+    }
+    100% {
+      opacity: 1;
+      width: 80vw;
+      height: 80vh;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  
+  /* 图标 SVG */
+  .sw-icon { width: 20px; height: 20px; fill: #555; }
+</style>
+
+<!-- HTML 结构 -->
+<div class="sw-backdrop-{{ $uid }}" id="backdrop-{{ $uid }}"></div>
+
+<!-- 增加一个 wrapper 用于占位 -->
+<div class="sw-wrapper-{{ $uid }}" id="wrapper-{{ $uid }}">
+    <div class="sw-container-{{ $uid }}" id="container-{{ $uid }}">
+        <div class="sw-content-{{ $uid }}">
+            {{ if (fileExists $filePath) }}
+                {{ readFile $filePath | safeHTML }}
+            {{ else }}
+                <p style="color:red;">Error: File not found at {{ $filePath }}</p>
+            {{ end }}
+        </div>
+
+        <button class="sw-btn-{{ $uid }}" id="btn-{{ $uid }}" aria-label="Toggle Fullscreen">
+            <svg id="icon-expand-{{ $uid }}" class="sw-icon" viewBox="0 0 24 24">
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+            </svg>
+            <svg id="icon-compress-{{ $uid }}" class="sw-icon" style="display:none;" viewBox="0 0 24 24">
+                <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-14v3h3v2h-5V5h2z"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<!-- JS 交互逻辑 -->
+<script>
+(function() {
+    const wrapper = document.getElementById('wrapper-{{ $uid }}');
+    const container = document.getElementById('container-{{ $uid }}');
+    const backdrop = document.getElementById('backdrop-{{ $uid }}');
+    const btn = document.getElementById('btn-{{ $uid }}');
+    const iconExpand = document.getElementById('icon-expand-{{ $uid }}');
+    const iconCompress = document.getElementById('icon-compress-{{ $uid }}');
+    
+    let isFullscreen = false;
+
+    function toggleFullscreen() {
+        isFullscreen = !isFullscreen;
+        
+        if (isFullscreen) {
+            // 1. 锁定占位符高度：防止页面内容因为元素脱离文档流而向上跳动
+            // 获取当前容器的高度
+            const currentHeight = container.offsetHeight;
+            wrapper.style.height = currentHeight + 'px';
+
+            // 2. 切换状态
+            container.classList.add('fullscreen');
+            backdrop.classList.add('active');
+            
+            // 3. 切换图标
+            iconExpand.style.display = 'none';
+            iconCompress.style.display = 'block';
+            
+            // 4. 禁止页面滚动
+            document.body.style.overflow = 'hidden'; 
+        } else {
+            // 1. 恢复状态
+            container.classList.remove('fullscreen');
+            backdrop.classList.remove('active');
+            
+            // 2. 释放占位符高度
+            wrapper.style.height = 'auto';
+
+            // 3. 切换图标
+            iconExpand.style.display = 'block';
+            iconCompress.style.display = 'none';
+            
+            // 4. 恢复页面滚动
+            document.body.style.overflow = '';
+        }
+    }
+
+    function closeFullscreen() {
+        if (isFullscreen) toggleFullscreen();
+    }
+
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleFullscreen();
+    });
+
+    backdrop.addEventListener('click', function() {
+        closeFullscreen();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isFullscreen) {
+            closeFullscreen();
+        }
+    });
+})();
+</script>

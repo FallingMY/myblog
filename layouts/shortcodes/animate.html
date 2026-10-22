@@ -1,0 +1,176 @@
+{{/*
+    layouts/shortcodes/animate.html
+    用法: {{< animate "my_content_1" >}}
+    参数 0: 要加载的 HTML 文件名 (不带 .html 扩展名)
+*/}}
+{{ $fileName := .Get 0 }}
+
+{{ if not $fileName }}
+    {{ errorf "The 'animate' shortcode requires a filename as the first argument. Example: {{< animate \"my_content_1\" >}}" }}
+{{ else }}
+    {{/* 
+        当 $fileName 不为空时，我们在这里定义所有需要的变量
+        确保这些定义在 `else` 块内部，并且在它们被使用之前
+    */}}
+    {{ $filePath := printf "layouts/shortcodes/animate_content/%s.html" $fileName }}
+    {{ if not (fileExists $filePath) }}
+        {{ errorf "File not found: %s. Please check the filename and path." $filePath }}
+    {{ end }}
+
+    {{ $content := readFile $filePath }}
+
+    {{ $uniqueId := printf "animate-modal-%s-%d" $fileName (now.UnixNano) }}
+
+    <style>
+        /* 基础容器样式 */
+        .{{ $uniqueId }}-container {
+            position: relative;
+            background-color: #f0f0f0;
+            border-radius: 15px; /* 圆角矩形 */
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px; /* 限制宽度 */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 全屏按钮样式 */
+        .{{ $uniqueId }}-fullscreen-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 10; /* 确保在内容之上 */
+        }
+        .{{ $uniqueId }}-fullscreen-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* 模态背景层 */
+        .{{ $uniqueId }}-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* 半透明黑色 */
+            backdrop-filter: blur(5px); /* 模糊效果 */
+            z-index: 1000; /* 确保在最上层 */
+            display: none; /* 默认隐藏 */
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .{{ $uniqueId }}-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* 模态内容容器 */
+        .{{ $uniqueId }}-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8); /* 初始缩小，中心对齐 */
+            width: 80vw; /* 80% 视口宽度 */
+            height: 80vh; /* 80% 视口高度 */
+            max-width: 900px; /* 最大宽度 */
+            max-height: 700px; /* 最大高度 */
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            z-index: 1001; /* 比 overlay 高 */
+            display: none; /* 默认隐藏 */
+            opacity: 0;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            overflow: auto; /* 内容超出时滚动 */
+            padding: 20px;
+        }
+        .{{ $uniqueId }}-modal.active {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1); /* 放大到正常大小 */
+        }
+
+        /* 模态内容内部滚动条美化 (可选) */
+        .{{ $uniqueId }}-modal::-webkit-scrollbar {
+            width: 8px;
+        }
+        .{{ $uniqueId }}-modal::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 4px;
+        }
+        .{{ $uniqueId }}-modal::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+        }
+
+    </style>
+
+    <div class="{{ $uniqueId }}-container">
+        {{ $content | safeHTML }}
+        <button class="{{ $uniqueId }}-fullscreen-btn" data-action="fullscreen">全屏</button>
+    </div>
+
+    <div class="{{ $uniqueId }}-overlay"></div>
+    <div class="{{ $uniqueId }}-modal">
+        {{ $content | safeHTML }}
+        <button class="{{ $uniqueId }}-fullscreen-btn" data-action="exit-fullscreen" style="position: absolute; bottom: 10px; right: 10px;">缩小</button>
+    </div>
+
+    <script>
+        (function() {
+            const uniqueId = "{{ $uniqueId }}";
+            const container = document.querySelector(`.${uniqueId}-container`);
+            const overlay = document.querySelector(`.${uniqueId}-overlay`);
+            const modal = document.querySelector(`.${uniqueId}-modal`);
+            const fullscreenBtn = container.querySelector(`.${uniqueId}-fullscreen-btn`);
+            const exitFullscreenBtn = modal.querySelector(`.${uniqueId}-fullscreen-btn[data-action="exit-fullscreen"]`);
+
+            function enterFullscreen() {
+                document.body.style.overflow = 'hidden'; /* 防止页面滚动 */
+                overlay.classList.add('active');
+                modal.classList.add('active');
+                fullscreenBtn.style.display = 'none'; /* 隐藏原按钮 */
+                exitFullscreenBtn.style.display = 'block'; /* 显示新按钮 */
+            }
+
+            function exitFullscreen() {
+                document.body.style.overflow = ''; /* 恢复页面滚动 */
+                overlay.classList.remove('active');
+                modal.classList.remove('active');
+                fullscreenBtn.style.display = 'block'; /* 显示原按钮 */
+                exitFullscreenBtn.style.display = 'none'; /* 隐藏新按钮 */
+            }
+
+            // 绑定全屏按钮点击事件
+            if (fullscreenBtn) {
+                fullscreenBtn.addEventListener('click', enterFullscreen);
+            }
+            // 绑定缩小按钮点击事件
+            if (exitFullscreenBtn) {
+                exitFullscreenBtn.addEventListener('click', exitFullscreen);
+            }
+
+            // 绑定点击 overlay 退出全屏事件
+            if (overlay) {
+                overlay.addEventListener('click', exitFullscreen);
+            }
+
+            // 绑定 ESC 键退出全屏事件
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.classList.contains('active')) {
+                    exitFullscreen();
+                }
+            });
+
+            // 确保一开始退出按钮是隐藏的
+            exitFullscreenBtn.style.display = 'none'; 
+        })();
+    </script>
+{{ end }} <!-- 结束 if not $fileName 的 else 块 -->

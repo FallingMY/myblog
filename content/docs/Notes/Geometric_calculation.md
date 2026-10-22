@@ -1,9 +1,9 @@
 ---
-# type: docs 
+# type: docs
 title: 计算几何
 date: 2025-03-22T13:47:27+08:00
 featured: false
-draft: true
+draft: false
 comment: true
 toc: true
 reward: true
@@ -47,6 +47,8 @@ images: []
 计算简单多边形的面积常用Shoelace公式。该公式通过顶点坐标计算多边形的面积。适用于顶点按顺时针或逆时针排列的简单多边形。
 
 Shoelace公式：
+
 $$
 S = \frac{1}{2} \sum_{i=1}^{n} (x_i y_{i+1} - x_{i+1} y_i)
 $$
+

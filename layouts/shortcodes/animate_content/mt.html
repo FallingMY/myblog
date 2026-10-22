@@ -1,0 +1,622 @@
+<!-- matrix-transpose.html -->
+<style>
+  /* 使用局部类名包裹，防止污染全局 CSS */
+  .viz-wrapper {
+    --primary: #3498db;
+    --secondary: #2ecc71;
+    --accent: #e74c3c;
+    --highlight: #f1c40f;
+    --bg: #ffffff;
+    --text: #343a40;
+    
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100%; /* 撑满容器 */
+    box-sizing: border-box;
+  }
+
+  .viz-wrapper h2,
+  .viz-wrapper h3 {
+    margin-bottom: 10px;
+    text-align: center;
+    margin-top: 0;
+  }
+
+  .viz-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .viz-panel {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 300px;
+  }
+
+  /* Matrix & Table Styles */
+  .viz-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #212529;
+  }
+
+  .viz-data-table th,
+  .viz-data-table td {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .viz-data-table th {
+    background-color: #e9ecef;
+  }
+
+  /* Special styling for triples */
+  .triple-row {
+    transition: background 0.3s;
+  }
+  .triple-row.active-source {
+    background-color: #fff3cd;
+    border-left: 5px solid var(--accent);
+  }
+  .triple-row.moved {
+    background-color: #e2e6ea;
+    color: #6c757d;
+  }
+  .triple-row.active-target {
+    background-color: #d1ecf1;
+    font-weight: bold;
+  }
+
+  /* Array Boxes (num & cpot) */
+  .array-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .array-box {
+    width: 35px;
+    height: 45px;
+    border: 2px solid #ced4da;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background: #fff;
+    transition: all 0.3s;
+    margin-bottom: 5px;
+  }
+
+  .array-box .idx {
+    font-size: 10px;
+    color: #6c757d;
+    margin-bottom: 2px;
+  }
+  .array-box .val {
+    font-weight: bold;
+    font-size: 14px;
+    color: #212529;
+  }
+
+  .array-box.highlight {
+    border-color: var(--accent);
+    background-color: #fff3cd;
+    transform: scale(1.1);
+  }
+  .array-box.updated {
+    border-color: var(--secondary);
+    background-color: #d1ecf1;
+  }
+
+  /* Controls */
+  .viz-controls {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .viz-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background 0.2s;
+  }
+
+  .viz-btn:hover {
+    background-color: #2980b9;
+  }
+  .viz-btn:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+  }
+
+  .viz-msg-box {
+    margin-top: 10px;
+    padding: 15px;
+    background: #e2f0fb;
+    border: 1px solid #b8daff;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    font-size: 16px;
+    min-height: 24px;
+    color: #004085;
+  }
+
+  .step-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .step-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    background: #e9ecef;
+    font-size: 12px;
+    color: #6c757d;
+  }
+  .step-badge.active {
+    background: var(--primary);
+    color: white;
+    font-weight: bold;
+  }
+</style>
+
+<div class="viz-wrapper">
+  <h2>稀疏矩阵转置：有序双下标法可视化</h2>
+
+  <div class="step-indicator">
+    <div class="step-badge" id="badge-1">1. 初始化</div>
+    <div class="step-badge" id="badge-2">2. 统计列频数 (num)</div>
+    <div class="step-badge" id="badge-3">3. 计算起始位置 (cpot)</div>
+    <div class="step-badge" id="badge-4">4. 搬运数据</div>
+    <div class="step-badge" id="badge-5">5. 完成</div>
+  </div>
+
+  <div class="viz-controls">
+    <button class="viz-btn" id="btn-prev" disabled>上一步</button>
+    <button class="viz-btn" id="btn-next">下一步</button>
+    <button class="viz-btn" id="btn-reset" style="background-color: var(--accent)">
+      重置
+    </button>
+  </div>
+
+  <div class="viz-msg-box" id="explanation">点击“下一步”开始演示...</div>
+
+  <div class="viz-container">
+    <!-- Left: Source -->
+    <div class="viz-panel">
+      <h3>源矩阵 M (三元组表)</h3>
+      <p style="font-size: 12px; text-align: center;">行数: 6, 列数: 6, 非零元: 8</p>
+      <table class="viz-data-table">
+        <thead>
+          <tr>
+            <th>索引</th>
+            <th>行 (i)</th>
+            <th>列 (j)</th>
+            <th>值 (v)</th>
+          </tr>
+        </thead>
+        <tbody id="source-body">
+          <!-- Generated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Middle: Auxiliary Arrays -->
+    <div class="viz-panel" style="flex: 0 0 250px">
+      <h3>辅助数组</h3>
+
+      <div style="margin-bottom: 20px">
+        <small><strong>num[]</strong>: 统计每列元素个数</small>
+        <div class="array-container" id="num-container"></div>
+      </div>
+
+      <div>
+        <small><strong>cpot[]</strong>: 该列在目标表中的起始位置</small>
+        <div class="array-container" id="cpot-container"></div>
+      </div>
+    </div>
+
+    <!-- Right: Target -->
+    <div class="viz-panel">
+      <h3>目标矩阵 T (转置后)</h3>
+      <p style="font-size: 12px; text-align: center;">行数: 6, 列数: 6, 非零元: 8</p>
+      <table class="viz-data-table">
+        <thead>
+          <tr>
+            <th>索引</th>
+            <th>行 (j)</th>
+            <th>列 (i)</th>
+            <th>值 (v)</th>
+          </tr>
+        </thead>
+        <tbody id="target-body">
+          <!-- Generated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 使用 IIFE (立即调用函数表达式) 防止污染全局作用域
+  (function() {
+    // --- 数据定义 ---
+    const sourceMatrix = {
+      rows: 6,
+      cols: 6,
+      count: 8,
+      data: [
+        { r: 0, c: 1, v: 12 },
+        { r: 0, c: 3, v: 9 },
+        { r: 1, c: 5, v: 4 },
+        { r: 2, c: 3, v: -3 },
+        { r: 3, c: 0, v: 15 },
+        { r: 3, c: 2, v: 11 },
+        { r: 4, c: 1, v: 7 },
+        { r: 5, c: 4, v: 22 },
+      ],
+    };
+
+    // 状态管理
+    let stepIndex = 0;
+    const steps = [];
+    // 辅助数组状态
+    let num = new Array(sourceMatrix.cols).fill(0);
+    let cpot = new Array(sourceMatrix.cols).fill(0);
+    let targetData = new Array(sourceMatrix.count).fill(null);
+
+    // --- DOM 元素获取 ---
+    // 注意：如果在同一个页面引用多次该组件，ID 会冲突。
+    // 在实际生产环境中建议将 ID 改为 Class 并在当前容器内查询，
+    // 但鉴于这是一个特定短代码，此处暂时保留 ID 逻辑。
+    const explanationEl = document.getElementById("explanation");
+    const sourceBody = document.getElementById("source-body");
+    const targetBody = document.getElementById("target-body");
+    const numContainer = document.getElementById("num-container");
+    const cpotContainer = document.getElementById("cpot-container");
+    const badges = [1, 2, 3, 4, 5].map((i) =>
+      document.getElementById(`badge-${i}`),
+    );
+    const btnNext = document.getElementById("btn-next");
+    const btnPrev = document.getElementById("btn-prev");
+    const btnReset = document.getElementById("btn-reset");
+
+    // --- 初始化渲染 ---
+    function init() {
+      // 渲染源表格
+      sourceBody.innerHTML = sourceMatrix.data
+        .map(
+          (d, i) => `
+          <tr id="src-row-${i}" class="triple-row">
+              <td>${i}</td><td>${d.r}</td><td>${d.c}</td><td>${d.v}</td>
+          </tr>
+      `,
+        )
+        .join("");
+
+      // 渲染目标表格（空）
+      targetBody.innerHTML = Array(sourceMatrix.count)
+        .fill(0)
+        .map(
+          (_, i) => `
+          <tr id="tgt-row-${i}" class="triple-row">
+              <td>${i}</td><td>-</td><td>-</td><td>-</td>
+          </tr>
+      `,
+        )
+        .join("");
+
+      // 渲染辅助数组
+      renderArray(numContainer, num, "num");
+      renderArray(cpotContainer, cpot, "cpot");
+
+      // 生成步骤队列
+      generateSteps();
+
+      updateUI();
+    }
+
+    function renderArray(container, data, idPrefix) {
+      container.innerHTML = data
+        .map(
+          (val, i) => `
+          <div class="array-box" id="${idPrefix}-${i}">
+              <span class="idx">${i}</span>
+              <span class="val">${val}</span>
+          </div>
+      `,
+        )
+        .join("");
+    }
+
+    // --- 核心逻辑：生成步骤序列 ---
+    function generateSteps() {
+      // 阶段 1: 准备
+      steps.push({
+        type: "INIT",
+        msg: "准备开始：源矩阵已按行优先存储。我们的目标是将其转置。",
+        badge: 0,
+      });
+
+      // 阶段 2: 统计 num (Counting)
+      let tempNum = new Array(sourceMatrix.cols).fill(0);
+
+      steps.push({
+        type: "INFO",
+        msg: "阶段 1：扫描源表，统计每列（原矩阵的列）出现的次数。",
+        badge: 1,
+      });
+
+      for (let i = 0; i < sourceMatrix.count; i++) {
+        const col = sourceMatrix.data[i].c;
+        const oldVal = tempNum[col];
+        tempNum[col]++;
+
+        steps.push({
+          type: "COUNT",
+          srcIdx: i,
+          colIdx: col,
+          newVal: tempNum[col],
+          msg: `扫描源表第 ${i} 项：列坐标为 ${col}。num[${col}] 从 ${oldVal} 增加到 ${tempNum[col]}。`,
+          badge: 1,
+        });
+      }
+
+      // 阶段 3: 计算 cpot (Positioning)
+      steps.push({
+        type: "INFO",
+        msg: "阶段 2：计算每列在目标表中的起始位置 (cpot)。",
+        badge: 2,
+      });
+
+      let tempCpot = new Array(sourceMatrix.cols).fill(0);
+      steps.push({
+        type: "CALC_CPOT",
+        colIdx: 0,
+        val: 0,
+        msg: `第 0 列总是从目标表的索引 0 开始。cpot[0] = 0。`,
+        badge: 2,
+      });
+
+      for (let col = 1; col < sourceMatrix.cols; col++) {
+        tempCpot[col] = tempCpot[col - 1] + tempNum[col - 1];
+        steps.push({
+          type: "CALC_CPOT",
+          colIdx: col,
+          val: tempCpot[col],
+          prevCol: col - 1,
+          prevNum: tempNum[col - 1],
+          prevCpot: tempCpot[col - 1],
+          msg: `cpot[${col}] = cpot[${col - 1}] (${tempCpot[col - 1]}) + num[${col - 1}] (${tempNum[col - 1]}) = ${tempCpot[col]}。`,
+          badge: 2,
+        });
+      }
+
+      // 阶段 4: 搬运 (Moving)
+      steps.push({
+        type: "INFO",
+        msg: "阶段 3：再次扫描源表，根据 cpot 将元素直接放入目标表。",
+        badge: 3,
+      });
+
+      let currentCpot = [...tempCpot];
+
+      for (let i = 0; i < sourceMatrix.count; i++) {
+        const item = sourceMatrix.data[i];
+        const col = item.c; 
+        const targetPos = currentCpot[col];
+
+        steps.push({
+          type: "MOVE",
+          srcIdx: i,
+          colIdx: col,
+          targetIdx: targetPos,
+          data: { r: item.c, c: item.r, v: item.v }, 
+          msg: `取源表第 ${i} 项 (列 ${col})。查 cpot[${col}] 得知目标位置为 ${targetPos}。放入数据。`,
+          badge: 3,
+        });
+
+        currentCpot[col]++;
+        steps.push({
+          type: "UPDATE_CPOT",
+          colIdx: col,
+          val: currentCpot[col],
+          msg: `该列位置已被占用，cpot[${col}] 增加 1，变为 ${currentCpot[col]}。`,
+          badge: 3,
+        });
+      }
+
+      steps.push({
+        type: "FINISH",
+        msg: "转置完成！目标表现在是按行有序的（原矩阵的列有序）。",
+        badge: 4,
+      });
+    }
+
+    // --- 执行步骤逻辑 ---
+    function applyStep(step) {
+      // 这里的 querySelectorAll 应该只查找当前 wrapper 内的元素，
+      // 但由于 .highlight 是通用类，这里暂时保留全局查找，建议在复杂项目中限定范围。
+      document
+        .querySelectorAll(".highlight, .active-source, .active-target")
+        .forEach((el) => {
+          el.classList.remove("highlight", "active-source", "active-target");
+        });
+
+      badges.forEach((b, i) => {
+        if(b) b.classList.toggle("active", i === step.badge);
+      });
+
+      if(explanationEl) explanationEl.textContent = step.msg;
+
+      switch (step.type) {
+        case "INIT":
+        case "INFO":
+        case "FINISH":
+          break;
+
+        case "COUNT":
+          const row = document.getElementById(`src-row-${step.srcIdx}`);
+          if(row) row.classList.add("active-source");
+          const numBox = document.getElementById(`num-${step.colIdx}`);
+          if(numBox) {
+            numBox.querySelector(".val").textContent = step.newVal;
+            numBox.classList.add("highlight", "updated");
+          }
+          break;
+
+        case "CALC_CPOT":
+          const cpotBox = document.getElementById(`cpot-${step.colIdx}`);
+          if(cpotBox) {
+            cpotBox.querySelector(".val").textContent = step.val;
+            cpotBox.classList.add("highlight", "updated");
+          }
+          if (step.prevCol !== undefined) {
+            const prevNum = document.getElementById(`num-${step.prevCol}`);
+            const prevCpot = document.getElementById(`cpot-${step.prevCol}`);
+            if(prevNum) prevNum.classList.add("highlight");
+            if(prevCpot) prevCpot.classList.add("highlight");
+          }
+          break;
+
+        case "MOVE":
+          const srcRow = document.getElementById(`src-row-${step.srcIdx}`);
+          if(srcRow) {
+            srcRow.classList.add("active-source");
+            srcRow.classList.add("moved");
+          }
+          const cpotRef = document.getElementById(`cpot-${step.colIdx}`);
+          if(cpotRef) cpotRef.classList.add("highlight");
+
+          const tgtRow = document.getElementById(`tgt-row-${step.targetIdx}`);
+          if(tgtRow) {
+            tgtRow.innerHTML = `<td>${step.targetIdx}</td><td>${step.data.r}</td><td>${step.data.c}</td><td>${step.data.v}</td>`;
+            tgtRow.classList.add("active-target");
+          }
+          break;
+
+        case "UPDATE_CPOT":
+          const cpotUpdateBox = document.getElementById(`cpot-${step.colIdx}`);
+          if(cpotUpdateBox) {
+            cpotUpdateBox.querySelector(".val").textContent = step.val;
+            cpotUpdateBox.classList.add("highlight");
+          }
+          break;
+      }
+    }
+
+    function updateUI() {
+      if(!sourceBody) return;
+      sourceBody.querySelectorAll("tr").forEach((tr) => {
+        tr.classList.remove("active-source", "moved");
+      });
+      if(targetBody) {
+        targetBody.innerHTML = Array(sourceMatrix.count)
+          .fill(0)
+          .map(
+            (_, i) => `
+            <tr id="tgt-row-${i}" class="triple-row">
+                <td>${i}</td><td>-</td><td>-</td><td>-</td>
+            </tr>
+        `,
+          )
+          .join("");
+      }
+
+      renderArray(numContainer, new Array(sourceMatrix.cols).fill(0), "num");
+      renderArray(cpotContainer, new Array(sourceMatrix.cols).fill(0), "cpot");
+
+      for (let i = 0; i < stepIndex; i++) {
+        fastForwardStep(steps[i]);
+      }
+
+      if (stepIndex < steps.length) {
+        applyStep(steps[stepIndex]);
+      } else {
+        badges.forEach((b) => b && b.classList.remove("active"));
+        if(document.getElementById("badge-4")) document.getElementById("badge-4").classList.add("active");
+        if(explanationEl) explanationEl.textContent = "演示结束。点击重置重新开始。";
+      }
+
+      if(btnPrev) btnPrev.disabled = stepIndex === 0;
+      if(btnNext) btnNext.disabled = stepIndex === steps.length - 1;
+    }
+
+    function fastForwardStep(step) {
+      switch (step.type) {
+        case "COUNT":
+          const numEl = document.getElementById(`num-${step.colIdx}`);
+          if(numEl) numEl.querySelector(".val").textContent = step.newVal;
+          break;
+        case "CALC_CPOT":
+          const cpotEl = document.getElementById(`cpot-${step.colIdx}`);
+          if(cpotEl) cpotEl.querySelector(".val").textContent = step.val;
+          break;
+        case "MOVE":
+          const srcEl = document.getElementById(`src-row-${step.srcIdx}`);
+          if(srcEl) srcEl.classList.add("moved");
+          const tgtRow = document.getElementById(`tgt-row-${step.targetIdx}`);
+          if(tgtRow) tgtRow.innerHTML = `<td>${step.targetIdx}</td><td>${step.data.r}</td><td>${step.data.c}</td><td>${step.data.v}</td>`;
+          break;
+        case "UPDATE_CPOT":
+          const cpotUpd = document.getElementById(`cpot-${step.colIdx}`);
+          if(cpotUpd) cpotUpd.querySelector(".val").textContent = step.val;
+          break;
+      }
+    }
+
+    // --- 事件监听 ---
+    if(btnNext) btnNext.addEventListener("click", () => {
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        updateUI();
+      }
+    });
+
+    if(btnPrev) btnPrev.addEventListener("click", () => {
+      if (stepIndex > 0) {
+        stepIndex--;
+        updateUI();
+      }
+    });
+
+    if(btnReset) btnReset.addEventListener("click", () => {
+      stepIndex = 0;
+      updateUI();
+    });
+
+    // 启动
+    init();
+  })();
+</script>
