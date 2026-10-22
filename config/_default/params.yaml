@@ -327,7 +327,8 @@ author:
   }
   # See https://hbs.razonyang.com/v1/en/docs/widgets/social-links/.
   social:
-    email: faling_my@outlook.com
+    email: falling_my@outlook.com
+    website: https://www.falling-studio.com
     github: fallingmy/fallingmy.github.io
     twitter: "Falling_Studio_"
     #patreon: ""
