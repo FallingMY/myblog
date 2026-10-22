@@ -34,17 +34,17 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Publish to FallingMY.github.io
-        env:
-          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+      - name: Checkout publish target
+        uses: actions/checkout@v4
+        with:
+          repository: FallingMY/FallingMY.github.io
+          token: ${{ secrets.PUBLISH_TOKEN }}
+          path: out
+
+      - name: Publish
         run: |
           set -euo pipefail
-          if [ -z "${PUBLISH_TOKEN:-}" ]; then
-            echo "::error::Missing secret PUBLISH_TOKEN — a fine-grained token with Contents:write on FallingMY/FallingMY.github.io"
-            exit 1
-          fi
-          git clone --depth 1 "https://x-access-token:${PUBLISH_TOKEN}@github.com/FallingMY/FallingMY.github.io.git" out
-          # Clean rebuild: drop every generated file, keep .git and hand-made sub-projects.
+          # Clean rebuild: replace every generated file, keep .git and hand-made sub-projects.
           rsync -a --delete --exclude '.git' --exclude 'puzzle' public/ out/
           touch out/.nojekyll
           cd out
@@ -56,4 +56,4 @@ jobs:
             exit 0
           fi
           git commit -m "Deploy myblog@${GITHUB_SHA:0:7}"
-          git push origin main
+          git push
