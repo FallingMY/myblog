@@ -1,0 +1,59 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.139.3'
+          extended: true
+
+      - name: Build
+        run: hugo --minify --gc --baseURL https://fallingmy.github.io/
+
+      - name: Publish to FallingMY.github.io
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PUBLISH_TOKEN:-}" ]; then
+            echo "::error::Missing secret PUBLISH_TOKEN — a fine-grained token with Contents:write on FallingMY/FallingMY.github.io"
+            exit 1
+          fi
+          git clone --depth 1 "https://x-access-token:${PUBLISH_TOKEN}@github.com/FallingMY/FallingMY.github.io.git" out
+          # Clean rebuild: drop every generated file, keep .git and hand-made sub-projects.
+          rsync -a --delete --exclude '.git' --exclude 'puzzle' public/ out/
+          touch out/.nojekyll
+          cd out
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
+          fi
+          git commit -m "Deploy myblog@${GITHUB_SHA:0:7}"
+          git push origin main
