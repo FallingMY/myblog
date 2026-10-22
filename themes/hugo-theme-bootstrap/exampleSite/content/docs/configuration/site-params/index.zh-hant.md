@@ -75,6 +75,8 @@ authors = ["RazonYang"]
 | `fontSize.large` | String | `1.1rem` | 大字體
 | `fontSize.extraLarge` | String | `1.2rem` | 更大的字體
 | `social` | Object | - | [社交鏈接]({{< ref "/docs/widgets/social-links" >}})。
+| `socialAnimation` | Boolean | `true` | 為 `false` 時間，移除社交鏈接的動畫。 |
+| `socialColor` | Boolean | `true` | 為 `false` 時間，移除社交鏈接的顏色。 |
 | `socialShare` | Boolean | `true` | 啟用/禁用內置的分享按鈕
 | `searchBar` | Boolean | `true` | 啟用/禁用搜索欄
 | **Archive**
@@ -94,6 +96,7 @@ authors = ["RazonYang"]
 | `topAppBar.colorToggle` | Boolean | `true` | 開啟或禁用顏色/模式開關。
 | `topAppBar.coloredInDark` | Boolean | `false` | 在深色模式下著色。
 | `topAppBar.dropdownMenuToggle` | Boolean | `true` | 隱藏下拉菜單的按鈕。
+| `topAppBar.expandBreakpoint` | string | `xxl` | 在此斷點以上展開內容，如：`lg`、`xl`、`xxl`。
 | **Webmaster Site Verification** 
 | `siteVerification` | Object | - |
 | `siteVerification.google` | String | - | Google
@@ -168,5 +171,9 @@ authors = ["RazonYang"]
 | `repo` | Object | - | See [Repository widget]({{< ref "docs/widgets/repository" >}}).
 | `docs.nav` | Object | - | 文檔佈局導航。
 | `docs.nav.reduceFontSize` | Boolean | `true` | 為 `false` 時，不縮小子導航菜單的字體大小。
+| `beian` | Object | - | 中國國內網站備案資訊。
+| `beian.icpNumber` | string | - | ICP 備案號。
+| `beian.psbNumber` | string | - | 公安備案號。
+| `beian.moeNumber` | string | - | 萌 ICP 備案號。
 
 > 除了 Google 站長工具外，其他搜索引擎站長工具無法與 `hugo --minify` 同時使用，這是因為它們無法識別優化後的元標簽。

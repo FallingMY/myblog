@@ -1,5 +1,128 @@
 # Changelog
 
+## [1.13.3](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.13.2...v1.13.3) (2025-12-27)
+
+
+### Documentation 📝
+
+* sort social media table ([#1140](https://github.com/razonyang/hugo-theme-bootstrap/issues/1140)) ([37c7c85](https://github.com/razonyang/hugo-theme-bootstrap/commit/37c7c85d0023206be453c07a802675e95d5a9c36))
+
+
+### Bug Fixes 🐞
+
+* removed Site.Social ([a961ac5](https://github.com/razonyang/hugo-theme-bootstrap/commit/a961ac569cbfbbfc66a6986bd864fe9eb4bc3041))
+
+## [1.13.2](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.13.1...v1.13.2) (2025-04-17)
+
+
+### Bug Fixes 🐞
+
+* replace `template` syntax with `partial` for pagination ([#1137](https://github.com/razonyang/hugo-theme-bootstrap/issues/1137)) ([8d47749](https://github.com/razonyang/hugo-theme-bootstrap/commit/8d47749fb47bc7810049be8014911dee54a3eb7d))
+
+## [1.13.1](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.13.0...v1.13.1) (2025-03-15)
+
+
+### Bug Fixes 🐞
+
+* allow using negative number as navWeight ([#1131](https://github.com/razonyang/hugo-theme-bootstrap/issues/1131)) ([fba06f2](https://github.com/razonyang/hugo-theme-bootstrap/commit/fba06f2ccc129cccfa023ce8da2cbf0c6bd24fef)), closes [#1130](https://github.com/razonyang/hugo-theme-bootstrap/issues/1130)
+* sorting docs navigation items in LinkTitle rather than Title ([fba06f2](https://github.com/razonyang/hugo-theme-bootstrap/commit/fba06f2ccc129cccfa023ce8da2cbf0c6bd24fef))
+
+## [1.13.0](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.12.1...v1.13.0) (2025-03-12)
+
+
+### Features ✨
+
+* add support for Codeberg social link ([#1128](https://github.com/razonyang/hugo-theme-bootstrap/issues/1128)) ([71f1ace](https://github.com/razonyang/hugo-theme-bootstrap/commit/71f1acecb68fae3498d05ee2038ed33cb4437942)), closes [#1127](https://github.com/razonyang/hugo-theme-bootstrap/issues/1127)
+
+## [1.12.1](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.12.0...v1.12.1) (2025-02-24)
+
+
+### Documentation 📝
+
+* update netlify form ([#1126](https://github.com/razonyang/hugo-theme-bootstrap/issues/1126)) ([5988732](https://github.com/razonyang/hugo-theme-bootstrap/commit/598873217a7c4f6d56de4539e8c8fae37e19cd58))
+
+
+### Bug Fixes 🐞
+
+* do not show Giscus on non posts layout ([#1124](https://github.com/razonyang/hugo-theme-bootstrap/issues/1124)) ([32044b2](https://github.com/razonyang/hugo-theme-bootstrap/commit/32044b2e5b0054dab10a09057397ff766ce0dcff))
+
+## [1.12.0](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.11.0...v1.12.0) (2025-02-17)
+
+
+### Features ✨
+
+* allow using HTML in profile bio ([5c2a553](https://github.com/razonyang/hugo-theme-bootstrap/commit/5c2a5530546edced77d25974dfe90e1673c16aa8))
+
+
+### Bug Fixes 🐞
+
+* docsearch ([440095f](https://github.com/razonyang/hugo-theme-bootstrap/commit/440095f12428dd1c661496178083c7f22f8f7d36))
+
+## [1.11.0](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.10.0...v1.11.0) (2025-02-15)
+
+
+### Features ✨
+
+* add the `beian` parameters for websites hosted in China ([#1109](https://github.com/razonyang/hugo-theme-bootstrap/issues/1109)) ([e52c6cf](https://github.com/razonyang/hugo-theme-bootstrap/commit/e52c6cfad45c0cf79756c734bbc3cd103db23883)), closes [#1108](https://github.com/razonyang/hugo-theme-bootstrap/issues/1108)
+
+## [1.10.0](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.9.5...v1.10.0) (2025-02-13)
+
+
+### Features ✨
+
+* add the `socialAnimation` parameter, remove animation from social links if `false` ([#1106](https://github.com/razonyang/hugo-theme-bootstrap/issues/1106)) ([1a87992](https://github.com/razonyang/hugo-theme-bootstrap/commit/1a879923b523f998b92298ab8078366d881126e3))
+* add the `socialColor` parameter, remove color from social links if `false` ([#1104](https://github.com/razonyang/hugo-theme-bootstrap/issues/1104)) ([c314550](https://github.com/razonyang/hugo-theme-bootstrap/commit/c314550b6893c1c889c2a5a8eebf35a8c23f064d)), closes [#1103](https://github.com/razonyang/hugo-theme-bootstrap/issues/1103)
+
+## [1.9.5](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.9.4...v1.9.5) (2025-02-13)
+
+
+### Bug Fixes 🐞
+
+* add X social link ([#1101](https://github.com/razonyang/hugo-theme-bootstrap/issues/1101)) ([ead86cf](https://github.com/razonyang/hugo-theme-bootstrap/commit/ead86cf89164601465e5da873ed9f5d3e6def052))
+* correct social share links ([ead86cf](https://github.com/razonyang/hugo-theme-bootstrap/commit/ead86cf89164601465e5da873ed9f5d3e6def052))
+
+## [1.9.4](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.9.3...v1.9.4) (2025-01-29)
+
+
+### Bug Fixes 🐞
+
+* **i18n:** update German translations ([#1098](https://github.com/razonyang/hugo-theme-bootstrap/issues/1098)) ([67ab569](https://github.com/razonyang/hugo-theme-bootstrap/commit/67ab569c0b4e11861fd4821ff97e76fd464c7151))
+
+## [1.9.3](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.9.2...v1.9.3) (2024-12-27)
+
+
+### Bug Fixes 🐞
+
+* revert a2254fdd3303a53dfa41ccef0744743d59c56fac, since feed scheme was not supported all OSes ([535c2ec](https://github.com/razonyang/hugo-theme-bootstrap/commit/535c2ec176e8c61d6e04b22887b8a0e8c5b79be3))
+
+## [1.9.2](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.9.1...v1.9.2) (2024-12-27)
+
+
+### Bug Fixes 🐞
+
+* replace RSS feed links with `feed` on all browsers ([a2254fd](https://github.com/razonyang/hugo-theme-bootstrap/commit/a2254fdd3303a53dfa41ccef0744743d59c56fac))
+
+## [1.9.1](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.9.0...v1.9.1) (2024-12-27)
+
+
+### Bug Fixes 🐞
+
+* replace `http` or `https` protocol with `feed` on Safari browser ([#1093](https://github.com/razonyang/hugo-theme-bootstrap/issues/1093)) ([ccd065d](https://github.com/razonyang/hugo-theme-bootstrap/commit/ccd065d4aa1b8455c7b4120836e4b7b5eccc647c))
+
+## [1.9.0](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.8.5...v1.9.0) (2024-12-22)
+
+
+### Features ✨
+
+* add the topAppBar.expandBreakpoint parameter ([#1090](https://github.com/razonyang/hugo-theme-bootstrap/issues/1090)) ([7e74d54](https://github.com/razonyang/hugo-theme-bootstrap/commit/7e74d54bb886b225ae9bb29ae9ee66f9940a1f2a))
+
+## [1.8.5](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.8.4...v1.8.5) (2024-12-21)
+
+
+### Bug Fixes 🐞
+
+* **i18n:** correct German translations ([#1087](https://github.com/razonyang/hugo-theme-bootstrap/issues/1087)) ([296e4b5](https://github.com/razonyang/hugo-theme-bootstrap/commit/296e4b598040015c80185276ab1cea0501184d3c))
+
 ## [1.8.4](https://github.com/razonyang/hugo-theme-bootstrap/compare/v1.8.3...v1.8.4) (2024-11-02)
 
 

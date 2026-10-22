@@ -74,6 +74,8 @@ The site parameters are located in `config/_default/params.toml` by default.
 | `fontSize.large` | String | `1.1rem` | Large font size.
 | `fontSize.extraLarge` | String | `1.2rem` | Extra large font size.
 | `social` | Object | - | [Social Links]({{< ref "/docs/widgets/social-links" >}}).
+| `socialAnimation` | Boolean | `true` | Remove animation from social links if `false`. |
+| `socialColor` | Boolean | `true` | Remove color from social links if `false`. |
 | `socialShare` | Boolean | `true` | Turn on/off built-on social share button.
 | `searchBar` | Boolean | `true` | Turn on/off built-on search bar.
 | `archive` | Object | - | [Archive]({{< ref "/docs/layouts/archives" >}}).
@@ -92,6 +94,7 @@ The site parameters are located in `config/_default/params.toml` by default.
 | `topAppBar.colorToggle` | Boolean | `true` | Turn on/off the color/mode toggle.
 | `topAppBar.coloredInDark` | Boolean | `false` | Colored in dark mode.
 | `topAppBar.dropdownMenuToggle` | Boolean | `true` | Hide the dropdown menu toggle.
+| `topAppBar.expandBreakpoint` | string | `xxl` | Expand content above this breakpoint, e.g. `lg`, `xl`, `xxl`.
 | **Webmaster Site Verification** 
 | `siteVerification` | Object | - |
 | `siteVerification.google` | String | - | Google
@@ -165,5 +168,9 @@ The site parameters are located in `config/_default/params.toml` by default.
 | `repo` | Object | - | See [Repository widget]({{< ref "docs/widgets/repository" >}}).
 | `docs.nav` | Object | - | Docs layout navigation.
 | `docs.nav.reduceFontSize` | Boolean | `true` | When `false`, don't reduce the font size of children navigation.
+| `beian` | Object | - | 备案 in pinyin, for websites hosted in China.
+| `beian.icpNumber` | string | - | ICP filing number.
+| `beian.psbNumber` | string | - | PSB filing number.
+| `beian.moeNumber` | string | - | Moe filing number.
 
 > Except the Google webmaster tool, the other webmaster tools cannot work with `hugo --minify`, because they cannot recognize the minified meta tag.

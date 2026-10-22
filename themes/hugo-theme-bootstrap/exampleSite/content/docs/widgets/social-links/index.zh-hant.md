@@ -76,6 +76,7 @@ github = "githubusername"
 | `stackoverflow` | Stack Overflow 使用者 ID |
 | `tumblr` | Tumblr 使用者名稱 |
 | `twitter` | Twitter 使用者名稱 |
+| `x` | X 使用者名稱 |
 | `weibo` | 微博使用者名稱 |
 | `zhihu` | 知乎使用者名稱 |
 | `reddit` | Reddit 使用者名稱 |
@@ -99,3 +100,4 @@ github = "githubusername"
 | `tipeee` | Tipeee 使用者名稱 |
 | `rss` | 空字符串以禁用 RSS 鏈接 |
 | `website` | 網站 URL |
+| `codeberg` | Codeberg 使用者名稱 |

@@ -4,6 +4,7 @@
   "artstation" (dict "url" "https://www.artstation.com/%s" "icon" "fab fa-artstation" "color" "#0a5878")
   "bilibili" (dict "url" "https://space.bilibili.com/%s" "icon" "fab fa-bilibili" "color" "#fb7299")
   "bitbucket" (dict "url" "https://bitbucket.org/%s" "color" "#0e65df")
+  "codeberg" (dict "url" "https://codeberg.org/%s" "icon" "fab fa-codeberg")
   "discord" (dict "url" "https://discord.com/invite/%s" "icon" "fab fa-discord")
   "discourse" (dict "url" "%s" "icon" "fab fa-discourse")
   "dockerhub" (dict "url" "https://hub.docker.com/u/%s" "icon" "fab fa-docker")
@@ -33,13 +34,14 @@
   "twitter" (dict "url" "https://twitter.com/%s" "color" "#1d9bf0")
   "website" (dict "url" "%s" "icon" "fas fa-link")
   "weibo" (dict "url" "https://weibo.com/%s" "color" "#e1162c")
+  "x" (dict "url" "https://x.com/%s" "icon" "fab fa-x-twitter" "color" "#000000")
   "xing" (dict "url" "https://www.xing.com/profile/%s" "icon" "fab fa-xing")
   "youtube" (dict "url" "https://www.youtube.com/channel/%s" "icon" "fab fa-youtube" "color" "#ff0000")
   "zhihu" (dict "url" "https://www.zhihu.com/people/%s" "color" "#056de8")
 -}}
 {{- $size := default "" .size }}
 {{- $linkClass := default "" .linkClass }}
-{{- $color := default true .color }}
+{{- $color := default (default true site.Params.socialColor) .color }}
 {{- $iconText := default false .iconText }}
 {{- $iconTextClass := default "ms-1" .iconTextClass }}
 
@@ -82,7 +84,7 @@
     {{- end }}
   {{- end }}
   {{- with $rss }}
-  <a class="nav-link social-link{{ with $linkClass }} {{ . }}{{ end }}" target="_blank" href="{{ .RelPermalink }}" title="{{ "social_rss" | i18n }}" rel="me">
+  <a class="nav-link social-link{{ with $linkClass }} {{ . }}{{ end }}" target="_blank" data-rss-feed href="{{ .Permalink }}" title="{{ "social_rss" | i18n }}" rel="me">
     <i class="fas fa-fw{{ with $size }} {{ . }}{{ end }} fa-rss"{{ if and $color }} style="color: #ea6221;"{{ end }}></i>
     {{- if $iconText }}
     <span{{ with $iconTextClass }} class="{{ . }}"{{ end }}>RSS</span>

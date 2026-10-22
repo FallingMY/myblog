@@ -101,7 +101,8 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { default as customIcons } from "./custom";
-import { faBilibili, faLiberapay, faOffline, faTipeee } from "./icons";
+import { faBilibili, faLiberapay, faOffline, faTipeee, faXTwitter } from "./icons";
+import faCodeberg from "./icons/faCodeberg";
 
 let icons = [
   // Solid Icons
@@ -209,9 +210,11 @@ let icons = [
 
   // Custom Icons
   faBilibili,
+  faCodeberg,
   faLiberapay,
   faOffline,
   faTipeee,
+  faXTwitter,
 ];
 
 config.searchPseudoElements = false; // This option will become a performance killer, especially in search page, it tooks a long time to render.

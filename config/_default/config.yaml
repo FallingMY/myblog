@@ -9,15 +9,12 @@ disableLanguages:
   - fr
   - zh-hans
   - zh-tw
-paginate: 10
+pagination:
+  pagerSize: 10
 # paginatePath: page
 enableRobotsTXT: true
 enableEmoji: true
 pygmentsUseClasses: true
-
-blackfriday:
-  hrefTargetBlank: true
-
 taxonomies:
   category: categories
   series: series
